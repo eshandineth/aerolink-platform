@@ -1,8 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const AWSXRay = require('aws-xray-sdk');
 const bookingRoutes = require('./routes/booking');
 
 const app = express();
+
+// AWS X-Ray Instrumentation for Distributed Tracing
+app.use(AWSXRay.express.openSegment('BookingService'));
 
 app.use(cors());
 app.use(express.json());
@@ -13,9 +17,17 @@ app.get('/health', (req, res) => {
 
 app.use('/api/v1/bookings', bookingRoutes);
 
+// AWS X-Ray Error Handler
+app.use(AWSXRay.express.closeSegment());
+
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => console.log(`Booking Service running on port ${PORT}`));
+  // Structured JSON Logging for CloudWatch
+  app.listen(PORT, () => console.log(JSON.stringify({
+    level: 'INFO',
+    message: `Booking Service running on port ${PORT}`,
+    timestamp: new Date().toISOString()
+  })));
 }
 
 module.exports = app;
