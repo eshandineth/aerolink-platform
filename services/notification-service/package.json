@@ -1,0 +1,9 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "Lambda Notification Service for AeroLink",
+  "main": "src/index.js",
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.0.0"
+  }
+}

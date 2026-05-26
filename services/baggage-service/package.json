@@ -1,0 +1,19 @@
+{
+  "name": "baggage-service",
+  "version": "1.0.0",
+  "description": "Baggage service for AeroLink",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-eventbridge": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}
