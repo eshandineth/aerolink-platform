@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          # This image will be replaced by ArgoCD / GitHub Actions during CD
+          image: YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/aerolink/auth-service:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: JWT_SECRET
+              value: "aerolink_production_secret_key_change_me"
+            - name: AWS_REGION
+              value: "us-east-1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: default
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
