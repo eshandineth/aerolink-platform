@@ -1,0 +1,97 @@
+Task-by-Task Breakdown
+1. Cloud Architecture Design (20%)
+Pass Level ✅
+First-Class Level 🏆
+Basic microservices diagram
+Professional C4 / AWS architecture diagram (draw.io / Lucidchart)
+Mention Docker
+Docker + ECS Fargate or EKS with proper service mesh
+Mention Lambda
+Lambda for specific event-driven tasks (e.g., notification triggers, baggage events)
+Single-region RDS
+DynamoDB Global Tables for multi-region + Aurora for relational data
+Basic explanation
+Clear justification of why each service was chosen over alternatives
+Pro Move: Use a hybrid approach — containerized core services (booking, check-in) + serverless for event-driven tasks (notifications, baggage tracking). This shows real-world thinking.
+2. Distributed APIs & Communication
+Pass Level ✅
+First-Class Level 🏆
+REST APIs between services
+REST + AWS EventBridge / SNS+SQS for async event-driven communication
+Basic API Gateway
+AWS API Gateway with rate limiting, API keys, usage plans
+Swagger docs
+OpenAPI 3.0 spec auto-generated from code + hosted Swagger UI
+Direct service calls
+Service discovery + loose coupling via message queues
+Pro Move: Implement an event-driven architecture where booking events trigger downstream services (baggage, notifications, seat updates) via EventBridge. This is exactly how airlines work in production.
+3. Security & Compliance
+Pass Level ✅
+First-Class Level 🏆
+Basic JWT auth
+AWS Cognito with OAuth 2.0 + JWT + RBAC (admin, staff, passenger roles)
+HTTPS
+HTTPS + encryption at rest (KMS for DynamoDB/S3) + TLS for service-to-service
+Mention GDPR
+Implement data anonymization, consent management, right-to-deletion endpoint
+Basic password hashing
+PCI-DSS awareness for payment data — tokenize card details, never store raw
+Pro Move: Implement Saga Pattern for distributed transactions (e.g., booking → payment → seat allocation). Discuss eventual consistency with real examples from your system.
+4. Real-Time Data Sync
+Pass Level ✅
+First-Class Level 🏆
+Polling-based updates
+WebSockets (API Gateway WebSocket API) for live seat/flight updates
+Manual data refresh
+DynamoDB Streams → Lambda → push updates to connected clients
+Basic sync
+Event-driven pipeline: flight change → EventBridge → update all dependent services simultaneously
+Pro Move: Build a live flight board or real-time seat map that updates without page refresh. This is visually impressive for the viva.
+5. Fault Tolerance & Resilience
+Pass Level ✅
+First-Class Level 🏆
+Basic error handling
+Circuit breaker pattern (e.g., using resilience library or custom implementation)
+Single AZ deployment
+Multi-AZ deployment + auto-scaling policies based on CPU/request count
+Manual recovery
+Dead letter queues for failed events + automated retry with exponential backoff
+Basic health checks
+Load balancer health checks + graceful degradation (fallback responses)
+Pro Move: Demonstrate a chaos engineering scenario — kill a service, show the system recovers automatically. This will blow the examiner's mind during viva.
+6. Performance & Scalability Testing
+Pass Level ✅
+First-Class Level 🏆
+Basic Postman tests
+Artillery / k6 / JMeter load tests with 100+ concurrent users
+"It works" evidence
+Graphs showing latency, throughput, error rates under load
+Single test run
+Stress test to find breaking point + discuss scaling strategies
+No analysis
+Compare performance before vs after optimizations (caching, connection pooling)
+Pro Move: Add ElastiCache (Redis) for caching frequent queries (flight searches). Show performance improvement with before/after graphs.
+7. Monitoring & Observability
+Pass Level ✅
+First-Class Level 🏆
+Basic CloudWatch logs
+Custom CloudWatch dashboards with alarms + metrics
+Console screenshots
+X-Ray distributed tracing across microservices
+Log statements
+Structured logging (JSON format) with correlation IDs across services
+No alerts
+CloudWatch Alarms → SNS notifications for critical failures
+Pro Move: Build a CloudWatch dashboard showing all services health at a glance. Screenshot this for the report — it looks extremely professional.
+8. Testing Strategy
+Pass Level ✅
+First-Class Level 🏆
+A few unit tests
+Comprehensive unit tests with good coverage per microservice
+Manual API tests
+Postman collections with automated test scripts + environment variables
+No CI/CD
+GitHub Actions / AWS CodePipeline for CI/CD with automated testing
+Screenshots of tests
+Test reports with pass/fail counts, coverage percentages
+Pro Move: Set up a CI/CD pipeline that runs tests on every push. Even a basic GitHub Actions workflow shows professional-grade engineering.
