@@ -4,7 +4,7 @@ metadata:
   name: websocket-service
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: websocket-service
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: websocket-service
-          image: YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/aerolink/websocket-service:latest
+          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/websocket-service:latest
           ports:
             - containerPort: 3000
           env:

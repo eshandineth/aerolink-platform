@@ -4,7 +4,7 @@ metadata:
   name: flight-service
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: flight-service
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: flight-service
-          image: YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/aerolink/flight-service:latest
+          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/flight-service:latest
           ports:
             - containerPort: 3000
           env:
