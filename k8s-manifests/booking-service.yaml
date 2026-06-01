@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: booking-service
-          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/booking-service:latest
+          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/booking-service:45efaf572b63d8e9653f428f887693f9663595a4
           ports:
             - containerPort: 3000
           env:
