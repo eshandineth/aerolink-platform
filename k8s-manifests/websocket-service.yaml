@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: websocket-service
-          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/websocket-service:45efaf572b63d8e9653f428f887693f9663595a4
+          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/websocket-service:086a810fb1ac90a4f61c31d68a2bdb5504a63634
           ports:
             - containerPort: 3000
           env:
