@@ -35,7 +35,11 @@ export default function Login() {
             <label style={{ display: 'block', marginBottom: '10px', color: 'var(--text-secondary)' }}>Password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="input-field" required />
           </div>
-          <button type="submit" className="btn-primary" style={{ width: '100%', padding: '15px' }}>Secure Login</button>
+          <button type="submit" className="btn-primary" style={{ width: '100%', padding: '15px', marginBottom: '15px' }}>Secure Login</button>
+          
+          <button type="button" onClick={() => navigate('/admin')} style={{ width: '100%', padding: '15px', background: 'transparent', border: '1px solid var(--accent)', color: 'var(--accent)', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
+            🛡️ Login as System Administrator
+          </button>
         </form>
       </div>
     </div>
