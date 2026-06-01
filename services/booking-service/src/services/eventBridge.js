@@ -8,7 +8,7 @@ const EVENT_BUS_NAME = 'aerolink-events';
 
 const publishEvent = async (detailType, detail) => {
   try {
-    if (process.env.NODE_ENV === 'development' && !process.env.AWS_ACCESS_KEY_ID) {
+    if (process.env.NODE_ENV === 'development' || process.env.AWS_ACCESS_KEY_ID === 'dummy') {
       console.log(`[LOCAL MOCK] Event published: ${detailType}`, detail);
       return { FailedEntryCount: 0 };
     }

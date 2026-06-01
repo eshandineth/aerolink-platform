@@ -1,0 +1,62 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30       # Run for 30 seconds
+      arrivalRate: 10    # 10 new users per second
+      name: "Warm up"
+    - duration: 60       # Run for 60 seconds
+      arrivalRate: 50    # 50 new users per second
+      name: "Ramp up load"
+    - duration: 30       # Run for 30 seconds
+      arrivalRate: 100   # 100 new users per second
+      name: "Peak load"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  # Scenario 1: Browse Flights (Read-heavy)
+  - name: "Browse flights"
+    weight: 60  # 60% of traffic
+    flow:
+      - get:
+          url: "/api/v1/flights"
+          expect:
+            - statusCode: 200
+
+  # Scenario 2: Book a Flight (Write - Saga Pattern)
+  - name: "Book a flight (Saga Success)"
+    weight: 25  # 25% of traffic
+    flow:
+      - post:
+          url: "/api/v1/bookings"
+          json:
+            userId: "load-test-user"
+            flightId: "AL-7023"
+            price: 450
+            simulatePaymentFailure: false
+          expect:
+            - statusCode: 201
+
+  # Scenario 3: Failed Booking (Saga Rollback)
+  - name: "Failed booking (Saga Rollback)"
+    weight: 10  # 10% of traffic
+    flow:
+      - post:
+          url: "/api/v1/bookings"
+          json:
+            userId: "load-test-user"
+            flightId: "AL-4491"
+            price: 800
+            simulatePaymentFailure: true
+          expect:
+            - statusCode: 500
+
+  # Scenario 4: Health Check
+  - name: "Health check"
+    weight: 5   # 5% of traffic
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200

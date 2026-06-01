@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = "aerolink-system-dashboard"
+  dashboard_name = "${var.project_name}-system-dashboard"
 
   dashboard_body = jsonencode({
     widgets = [
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", "aerolink-flights"],
+            ["AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", "${var.project_name}-flights"],
             [".", "ConsumedWriteCapacityUnits", ".", "."]
           ]
           view    = "timeSeries"

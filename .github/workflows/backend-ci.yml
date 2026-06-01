@@ -16,17 +16,17 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write # Required for requesting the OIDC JWT token
       contents: write # Needed to commit back to the repo
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configure AWS credentials (Passwordless OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aerolink-github-actions-role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR

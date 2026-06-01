@@ -10,7 +10,7 @@ const publishEvent = async (detailType, detail) => {
   try {
     // In local development, we skip actual EventBridge publishing unless AWS credentials are set
     // This allows local docker-compose to run without AWS errors
-    if (process.env.NODE_ENV === 'development' && !process.env.AWS_ACCESS_KEY_ID) {
+    if (process.env.NODE_ENV === 'development' || process.env.AWS_ACCESS_KEY_ID === 'dummy') {
       console.log(`[LOCAL MOCK] Event published: ${detailType}`, detail);
       return { FailedEntryCount: 0 };
     }
