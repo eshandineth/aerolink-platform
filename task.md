@@ -37,3 +37,13 @@
 - `[ ]` Generate OpenAPI 3.0 documentation
 - `[ ]` Script and practice the "Chaos Engineering" pod-kill demo
 - `[ ]` Package source code and write final report
+
+## Phase 6: Superior Upgrade Strategy (Final Polish)
+- `[x]` Multi-Region Deployment (DynamoDB Global Tables)
+- `[x]` Swagger / OpenAPI Docs in auth-service
+- `[x]` Circuit Breaker (Opossum) in booking-service
+- `[x]` Artillery Performance Load Testing Report
+- `[x]` Premium UI: Interactive 2D Seat Map & Dynamic Pricing
+- `[x]` Premium UI: Baggage Tracking Timeline
+- `[x]` Premium UI: Real User/Admin Auth Flow
+- `[x]` Premium UI: Advanced Admin Dashboard

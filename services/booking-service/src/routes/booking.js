@@ -15,6 +15,8 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = 'aerolink-bookings';
 
+const CircuitBreaker = require('opossum');
+
 // For the Saga pattern, we pretend to hit a payment gateway
 const simulatePayment = async (amount, shouldFail = false) => {
   return new Promise((resolve, reject) => {
@@ -24,6 +26,23 @@ const simulatePayment = async (amount, shouldFail = false) => {
     }, 1000); // 1 second delay to simulate network latency
   });
 };
+
+// CIRCUIT BREAKER IMPLEMENTATION
+const breakerOptions = {
+  timeout: 3000, // If our payment gateway takes longer than 3 seconds, trigger a failure
+  errorThresholdPercentage: 50, // When 50% of requests fail, trip the circuit
+  resetTimeout: 10000 // After 10 seconds, try again
+};
+
+const paymentCircuitBreaker = new CircuitBreaker(simulatePayment, breakerOptions);
+
+paymentCircuitBreaker.fallback(() => {
+  return { transactionId: 'FALLBACK-TXN', status: 'FAILED_BUT_HANDLED_BY_CIRCUIT_BREAKER' };
+});
+
+paymentCircuitBreaker.on('open', () => console.warn(`[CIRCUIT BREAKER] 🚨 OPEN! Payment gateway is down. Preventing cascading failures.`));
+paymentCircuitBreaker.on('halfOpen', () => console.info(`[CIRCUIT BREAKER] ⏳ HALF-OPEN. Testing if payment gateway is back online...`));
+paymentCircuitBreaker.on('close', () => console.info(`[CIRCUIT BREAKER] ✅ CLOSED. Payment gateway recovered.`));
 
 router.post('/', async (req, res) => {
   const { userId, flightId, price, simulatePaymentFailure = false } = req.body;
@@ -42,9 +61,14 @@ router.post('/', async (req, res) => {
     await docClient.send(new PutCommand({ TableName: TABLE_NAME, Item: bookingData }));
     sagaState = 'BOOKING_CREATED';
 
-    // Step 2: Process Payment (Simulation)
-    console.log(`[SAGA] Step 2: Processing payment for ${bookingId}`);
-    const paymentResult = await simulatePayment(price, simulatePaymentFailure);
+    // Step 2: Process Payment (Simulation via Circuit Breaker)
+    console.log(`[SAGA] Step 2: Processing payment for ${bookingId} via Circuit Breaker`);
+    const paymentResult = await paymentCircuitBreaker.fire(price, simulatePaymentFailure);
+    
+    if (paymentResult.status === 'FAILED_BUT_HANDLED_BY_CIRCUIT_BREAKER') {
+      throw new Error('Circuit breaker is OPEN or payment timed out. Payment rejected safely.');
+    }
+    
     sagaState = 'PAYMENT_PROCESSED';
 
     // Step 3: Confirm Booking

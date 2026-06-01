@@ -44,7 +44,7 @@ export default function AdminDashboard() {
       </div>
 
       <h3 style={{ marginBottom: '20px' }}>Flight Management Database</h3>
-      <div className="glass-panel" style={{ padding: '20px', overflowX: 'auto' }}>
+      <div className="glass-panel" style={{ padding: '20px', overflowX: 'auto', marginBottom: '40px' }}>
         <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -64,11 +64,55 @@ export default function AdminDashboard() {
                 <td style={{ padding: '15px' }}>{f.destination}</td>
                 <td style={{ padding: '15px' }}>{f.availableSeats}</td>
                 <td style={{ padding: '15px' }}><span style={{ padding: '5px 10px', background: 'rgba(0,255,157,0.1)', color: 'var(--success)', borderRadius: '10px', fontSize: '0.8rem' }}>ON TIME</span></td>
-                <td style={{ padding: '15px' }}><button style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '5px', cursor: 'pointer' }}>Manage</button></td>
+                <td style={{ padding: '15px' }}>
+                  <button style={{ padding: '5px 10px', background: 'rgba(255, 51, 102, 0.2)', border: '1px solid var(--danger)', color: '#fff', borderRadius: '5px', cursor: 'pointer', marginRight: '10px' }}>Cancel</button>
+                  <button style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '5px', cursor: 'pointer' }}>Manage</button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+        {/* ADD FLIGHT */}
+        <div className="glass-panel" style={{ padding: '30px' }}>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '20px' }}>➕ Schedule New Flight</h3>
+          <form onSubmit={e => { e.preventDefault(); alert('Flight scheduled successfully (Demo)'); }}>
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Origin</label>
+                <input type="text" className="input-field" placeholder="e.g. JFK" required />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Destination</label>
+                <input type="text" className="input-field" placeholder="e.g. LHR" required />
+              </div>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Departure Time</label>
+              <input type="datetime-local" className="input-field" required />
+            </div>
+            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '12px' }}>Deploy Flight to EKS Cluster</button>
+          </form>
+        </div>
+
+        {/* BAGGAGE CONTROL */}
+        <div className="glass-panel" style={{ padding: '30px' }}>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '20px' }}>🧳 Real-Time Baggage Control</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+            Update baggage statuses here. Our WebSocket server will instantly push this update to the user's tracking timeline without refreshing.
+          </p>
+          <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+            <input type="text" className="input-field" placeholder="Baggage ID (e.g. BAG-123)" style={{ flex: 1 }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <button className="btn-primary" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', padding: '10px' }}>Status: Checked In</button>
+            <button className="btn-primary" style={{ background: 'rgba(0, 240, 255, 0.2)', border: '1px solid var(--accent)', padding: '10px' }}>Status: Loaded 🛫</button>
+            <button className="btn-primary" style={{ background: 'rgba(255, 215, 0, 0.2)', border: '1px solid rgba(255, 215, 0, 0.5)', padding: '10px' }}>Status: In Transit</button>
+            <button className="btn-primary" style={{ background: 'rgba(0, 255, 157, 0.2)', border: '1px solid var(--success)', padding: '10px' }}>Status: Arrived 🛬</button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,13 @@ resource "aws_dynamodb_table" "users_table" {
     name = "userId"
     type = "S"
   }
+
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  replica {
+    region_name = "us-west-2"
+  }
 }
 
 resource "aws_dynamodb_table" "flights_table" {
@@ -19,6 +26,13 @@ resource "aws_dynamodb_table" "flights_table" {
   attribute {
     name = "flightId"
     type = "S"
+  }
+
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  replica {
+    region_name = "us-west-2"
   }
 }
 
@@ -31,6 +45,13 @@ resource "aws_dynamodb_table" "bookings_table" {
     name = "bookingId"
     type = "S"
   }
+
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  replica {
+    region_name = "us-west-2"
+  }
 }
 
 resource "aws_dynamodb_table" "baggage_table" {
@@ -41,5 +62,12 @@ resource "aws_dynamodb_table" "baggage_table" {
   attribute {
     name = "baggageId"
     type = "S"
+  }
+
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  replica {
+    region_name = "us-west-2"
   }
 }

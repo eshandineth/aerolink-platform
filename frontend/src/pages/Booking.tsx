@@ -60,23 +60,109 @@ export default function Booking() {
     }, 3000);
   };
 
+  const [selectedSeat, setSelectedSeat] = useState<string | null>(null);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  // Generate a mock seat map: 5 rows, 4 seats per row (A B C D)
+  // Rows 1-2 are VIP (First Class), Rows 3-5 are Economy
+  const renderSeatMap = () => {
+    const rows = [1, 2, 3, 4, 5];
+    const cols = ['A', 'B', 'C', 'D'];
+    
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center', margin: '30px 0', padding: '30px', background: 'rgba(0,0,0,0.2)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <h3 style={{ color: '#fff', marginBottom: '10px' }}>✈️ Select Your Seat</h3>
+        
+        {/* Plane Cabin Layout */}
+        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '40px 40px 10px 10px', border: '2px solid rgba(255,255,255,0.05)' }}>
+          {rows.map(row => (
+            <div key={row} style={{ display: 'flex', gap: '10px', marginBottom: '10px', justifyContent: 'center' }}>
+              {cols.map((col, idx) => {
+                const seatId = `${row}${col}`;
+                const isVIP = row <= 2;
+                const price = isVIP ? 850 : 350;
+                const isSelected = selectedSeat === seatId;
+                
+                // Simulate some random booked seats (e.g., 2A, 4C)
+                const isBooked = seatId === '2A' || seatId === '4C';
+                
+                // Color logic
+                let bg = 'rgba(255,255,255,0.1)';
+                let border = '1px solid rgba(255,255,255,0.2)';
+                let shadow = 'none';
+                
+                if (isBooked) {
+                  bg = 'rgba(255, 51, 102, 0.2)';
+                  border = '1px solid var(--danger)';
+                } else if (isSelected) {
+                  bg = 'var(--accent)';
+                  border = '1px solid #fff';
+                  shadow = '0 0 15px var(--accent)';
+                } else if (isVIP) {
+                  bg = 'rgba(255, 215, 0, 0.15)'; // Gold for VIP
+                  border = '1px solid rgba(255, 215, 0, 0.5)';
+                }
+
+                return (
+                  <div key={seatId} style={{ display: 'flex', gap: idx === 1 ? '40px' : '0' }}>
+                    <button 
+                      disabled={isBooked}
+                      onClick={() => { setSelectedSeat(seatId); setTotalPrice(price); }}
+                      style={{
+                        width: '50px', height: '50px', borderRadius: '10px',
+                        background: bg, border: border, boxShadow: shadow,
+                        color: isSelected ? '#000' : '#fff', fontWeight: 'bold',
+                        cursor: isBooked ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem'
+                      }}
+                      title={`${isVIP ? 'First Class' : 'Economy'} - $${price}`}
+                    >
+                      {seatId}
+                    </button>
+                    {idx === 1 && <div style={{ width: '2px', background: 'rgba(255,255,255,0.05)', margin: '0 -20px' }}></div>} {/* Aisle */}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        
+        {/* Legend */}
+        <div style={{ display: 'flex', gap: '20px', fontSize: '0.9rem', color: '#aaa', marginTop: '10px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><div style={{ width: '15px', height: '15px', background: 'rgba(255, 215, 0, 0.15)', border: '1px solid rgba(255,215,0,0.5)', borderRadius: '4px' }}></div> VIP ($850)</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><div style={{ width: '15px', height: '15px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px' }}></div> Economy ($350)</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><div style={{ width: '15px', height: '15px', background: 'rgba(255, 51, 102, 0.2)', border: '1px solid var(--danger)', borderRadius: '4px' }}></div> Booked</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="glass-panel" style={{ padding: '50px', maxWidth: '700px', margin: '0 auto' }}>
+    <div className="glass-panel" style={{ padding: '50px', maxWidth: '800px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Complete Booking</h2>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Flight Reference: <span style={{ color: 'var(--text-primary)' }}>{flightId}</span></p>
       
-      <div style={{ margin: '40px 0', padding: '30px', background: 'rgba(0, 240, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
-        <h3 style={{ margin: '0 0 15px 0', color: 'var(--accent)' }}>Live Seat Availability</h3>
-        <p style={{ fontSize: '3rem', margin: 0, fontWeight: 'bold', textShadow: '0 0 20px rgba(0,240,255,0.5)' }}>
-          {liveSeats} <span style={{ fontSize: '1.2rem', fontWeight: 'normal', color: 'var(--text-secondary)', textShadow: 'none' }}>seats remaining</span>
-        </p>
-        <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '10px' }}>🟢 Real-time updates via WebSocket</small>
-      </div>
+      {status === 'IDLE' && renderSeatMap()}
 
       {status === 'IDLE' && (
-        <div style={{ display: 'flex', gap: '20px', marginTop: '40px' }}>
-          <button className="btn-primary" onClick={() => handleBook(false)} style={{ flex: 1, padding: '15px' }}>Confirm Payment (Success)</button>
-          <button className="btn-primary" onClick={() => handleBook(true)} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, var(--danger), #cc0033)' }}>Simulate Payment Failure</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '40px' }}>
+          {selectedSeat ? (
+            <div style={{ padding: '20px', background: 'rgba(0, 240, 255, 0.1)', borderRadius: '12px', border: '1px solid var(--accent)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#fff' }}>Seat {selectedSeat}</h3>
+                <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Total: ${totalPrice}</span>
+              </div>
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <button className="btn-primary" onClick={() => handleBook(false)} style={{ padding: '12px 25px' }}>Pay Now</button>
+                <button className="btn-primary" onClick={() => handleBook(true)} style={{ padding: '12px 25px', background: 'linear-gradient(135deg, var(--danger), #cc0033)' }}>Simulate Error</button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#888', border: '1px dashed rgba(255,255,255,0.2)', borderRadius: '12px' }}>
+              Please select a seat to proceed to payment.
+            </div>
+          )}
         </div>
       )}
 

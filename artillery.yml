@@ -1,13 +1,13 @@
 config:
-  target: "http://localhost:3000"
+  target: "http://a0baf2c7052d44141ac4d637738eda55-1d1e7c89a77d4039.elb.us-east-1.amazonaws.com"
   phases:
-    - duration: 30       # Run for 30 seconds
+    - duration: 5       # Run for 5 seconds
       arrivalRate: 10    # 10 new users per second
       name: "Warm up"
-    - duration: 60       # Run for 60 seconds
+    - duration: 10       # Run for 10 seconds
       arrivalRate: 50    # 50 new users per second
       name: "Ramp up load"
-    - duration: 30       # Run for 30 seconds
+    - duration: 10       # Run for 10 seconds
       arrivalRate: 100   # 100 new users per second
       name: "Peak load"
   defaults:

@@ -7,23 +7,23 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/v1/auth': {
-        target: 'http://a1462f181d9c047cba7c7695a8bc83a5-28ab496a7fb63650.elb.us-east-1.amazonaws.com',
+        target: 'http://a0baf2c7052d44141ac4d637738eda55-1d1e7c89a77d4039.elb.us-east-1.amazonaws.com',
         changeOrigin: true,
       },
       '/api/v1/flights': {
-        target: 'http://a1462f181d9c047cba7c7695a8bc83a5-28ab496a7fb63650.elb.us-east-1.amazonaws.com',
+        target: 'http://a0baf2c7052d44141ac4d637738eda55-1d1e7c89a77d4039.elb.us-east-1.amazonaws.com',
         changeOrigin: true,
       },
       '/api/v1/bookings': {
-        target: 'http://a1462f181d9c047cba7c7695a8bc83a5-28ab496a7fb63650.elb.us-east-1.amazonaws.com',
+        target: 'http://a0baf2c7052d44141ac4d637738eda55-1d1e7c89a77d4039.elb.us-east-1.amazonaws.com',
         changeOrigin: true,
       },
       '/api/v1/baggage': {
-        target: 'http://a1462f181d9c047cba7c7695a8bc83a5-28ab496a7fb63650.elb.us-east-1.amazonaws.com',
+        target: 'http://a0baf2c7052d44141ac4d637738eda55-1d1e7c89a77d4039.elb.us-east-1.amazonaws.com',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'http://a1462f181d9c047cba7c7695a8bc83a5-28ab496a7fb63650.elb.us-east-1.amazonaws.com',
+        target: 'http://a0baf2c7052d44141ac4d637738eda55-1d1e7c89a77d4039.elb.us-east-1.amazonaws.com',
         changeOrigin: true,
         ws: true,
       },
