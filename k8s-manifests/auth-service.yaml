@@ -16,7 +16,7 @@ spec:
       containers:
         - name: auth-service
           # This image will be replaced by ArgoCD / GitHub Actions during CD
-          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/auth-service:086a810fb1ac90a4f61c31d68a2bdb5504a63634
+          image: 791945999903.dkr.ecr.us-east-1.amazonaws.com/aerolink/auth-service:d211d3f4e3b5ed4074d7955f5b587d9138b5eee7
           ports:
             - containerPort: 3000
           env:
