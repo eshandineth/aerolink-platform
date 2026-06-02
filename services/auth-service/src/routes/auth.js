@@ -147,4 +147,33 @@ router.post('/login', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users (Admin only)
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: List of users
+ */
+router.get('/users', async (req, res) => {
+  try {
+    const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
+    const command = new ScanCommand({ TableName: TABLE_NAME });
+    const response = await docClient.send(command);
+    
+    // Strip passwords before returning
+    const users = response.Items.map(user => {
+      const { password, ...safeUser } = user;
+      return safeUser;
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Could not retrieve users' });
+  }
+});
+
 module.exports = router;

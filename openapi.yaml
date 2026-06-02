@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: AeroLink Platform API
+  description: Distributed Microservices API for Flight Booking and Baggage Tracking
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local API Gateway
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '201': { description: User registered }
+  /auth/login:
+    post:
+      summary: Authenticate user and get JWT
+      responses:
+        '200': { description: JWT Token returned }
+  /auth/users:
+    get:
+      summary: Get all users (Admin only)
+      responses:
+        '200': { description: List of users }
+        
+  /flights:
+    get:
+      summary: Get all available flights
+      responses:
+        '200': { description: A list of flights }
+    post:
+      summary: Create a new flight schedule (Admin)
+      responses:
+        '201': { description: Flight created }
+  /flights/{id}:
+    put:
+      summary: Update flight details
+      parameters: [{ in: path, name: id, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Flight updated }
+    delete:
+      summary: Cancel a flight
+      parameters: [{ in: path, name: id, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Flight deleted }
+
+  /bookings:
+    post:
+      summary: Create a new seat booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId: { type: string }
+                flightId: { type: string }
+                seatId: { type: string }
+                price: { type: number }
+      responses:
+        '201': { description: Booking successful }
+        '409': { description: Conflict - Seat already booked }
+  /bookings/flight/{flightId}/seats:
+    get:
+      summary: Get booked seats for a flight
+      parameters: [{ in: path, name: flightId, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: List of booked seat IDs }
+  /bookings/{id}/checkin:
+    patch:
+      summary: Online check-in (requires passport details within 24h)
+      parameters: [{ in: path, name: id, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Checked in successfully }
+        '400': { description: Invalid time or missing details }
+  /bookings/{id}/cancel:
+    patch:
+      summary: Cancel booking and release seat
+      parameters: [{ in: path, name: id, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Booking cancelled }
+
+  /baggage:
+    get:
+      summary: Get all baggage (Admin)
+      responses:
+        '200': { description: List of baggage }
+  /baggage/checkin:
+    post:
+      summary: Register new baggage
+      responses:
+        '201': { description: Baggage added }
+  /baggage/booking/{bookingId}:
+    get:
+      summary: Track baggage by PNR
+      parameters: [{ in: path, name: bookingId, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Baggage tracking details }
+        '404': { description: Baggage not found }
+  /baggage/{id}/status:
+    patch:
+      summary: Update baggage status (Admin)
+      parameters: [{ in: path, name: id, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Status updated and pushed via WebSockets }
+

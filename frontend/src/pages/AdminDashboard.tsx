@@ -5,18 +5,25 @@ const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 export default function AdminDashboard() {
   const [flights, setFlights] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [allBaggage, setAllBaggage] = useState([]);
 
   useEffect(() => {
-    // Fetch flights to display in the admin panel
-    const fetchFlights = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_URL}/flights`);
-        setFlights(res.data);
+        const [flightsRes, usersRes, baggageRes] = await Promise.all([
+          axios.get(`${API_URL}/flights`),
+          axios.get(`${API_URL}/auth/users`),
+          axios.get(`${API_URL}/baggage`)
+        ]);
+        setFlights(flightsRes.data);
+        setUsers(usersRes.data);
+        setAllBaggage(baggageRes.data);
       } catch (err) {
         console.error(err);
       }
     };
-    fetchFlights();
+    fetchData();
   }, []);
 
   return (
@@ -38,8 +45,8 @@ export default function AdminDashboard() {
           <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '10px 0 0 0', color: 'var(--success)' }}>100%</p>
         </div>
         <div className="glass-panel" style={{ padding: '20px', textAlign: 'center' }}>
-          <h3 style={{ color: 'var(--text-secondary)' }}>Saga Orchestrations</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '10px 0 0 0' }}>12</p>
+          <h3 style={{ color: 'var(--text-secondary)' }}>Total Registered Users</h3>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '10px 0 0 0' }}>{users.length || 0}</p>
         </div>
       </div>
 
@@ -65,8 +72,27 @@ export default function AdminDashboard() {
                 <td style={{ padding: '15px' }}>{f.availableSeats}</td>
                 <td style={{ padding: '15px' }}><span style={{ padding: '5px 10px', background: 'rgba(0,255,157,0.1)', color: 'var(--success)', borderRadius: '10px', fontSize: '0.8rem' }}>ON TIME</span></td>
                 <td style={{ padding: '15px' }}>
-                  <button style={{ padding: '5px 10px', background: 'rgba(255, 51, 102, 0.2)', border: '1px solid var(--danger)', color: '#fff', borderRadius: '5px', cursor: 'pointer', marginRight: '10px' }}>Cancel</button>
-                  <button style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '5px', cursor: 'pointer' }}>Manage</button>
+                  <button onClick={async () => {
+                    if (confirm('Are you sure you want to cancel this flight?')) {
+                      try {
+                        await axios.delete(`${API_URL}/flights/${f.flightId}`);
+                        window.location.reload();
+                      } catch (e) {
+                        alert('Failed to delete flight');
+                      }
+                    }
+                  }} style={{ padding: '5px 10px', background: 'rgba(255, 51, 102, 0.2)', border: '1px solid var(--danger)', color: '#fff', borderRadius: '5px', cursor: 'pointer', marginRight: '10px' }}>Cancel</button>
+                  <button onClick={() => {
+                    const price = prompt('Enter new price:', f.price);
+                    if (!price) return;
+                    axios.put(`${API_URL}/flights/${f.flightId}`, {
+                      origin: f.origin,
+                      destination: f.destination,
+                      departureTime: f.departureTime,
+                      price: parseInt(price)
+                    }).then(() => window.location.reload())
+                      .catch(() => alert('Failed to edit flight'));
+                  }} style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '5px', cursor: 'pointer' }}>Manage Price</button>
                 </td>
               </tr>
             ))}
@@ -78,22 +104,41 @@ export default function AdminDashboard() {
         {/* ADD FLIGHT */}
         <div className="glass-panel" style={{ padding: '30px' }}>
           <h3 style={{ color: 'var(--accent)', marginBottom: '20px' }}>➕ Schedule New Flight</h3>
-          <form onSubmit={e => { e.preventDefault(); alert('Flight scheduled successfully (Demo)'); }}>
+          <form onSubmit={async (e: any) => { 
+            e.preventDefault(); 
+            const data = {
+              flightNumber: `AL-${Math.floor(Math.random() * 900) + 100}`,
+              origin: e.target.origin.value,
+              destination: e.target.destination.value,
+              departureTime: e.target.time.value,
+              arrivalTime: new Date(new Date(e.target.time.value).getTime() + 14400000).toISOString(),
+              price: 450,
+              totalSeats: 120
+            };
+            try {
+              await axios.post(`${API_URL}/flights`, data);
+              alert('Flight scheduled successfully!');
+              window.location.reload();
+            } catch (err) {
+              console.error(err);
+              alert('Failed to schedule flight.');
+            }
+          }}>
             <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Origin</label>
-                <input type="text" className="input-field" placeholder="e.g. JFK" required />
+                <input name="origin" type="text" className="input-field" placeholder="e.g. JFK" required />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Destination</label>
-                <input type="text" className="input-field" placeholder="e.g. LHR" required />
+                <input name="destination" type="text" className="input-field" placeholder="e.g. LHR" required />
               </div>
             </div>
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Departure Time</label>
-              <input type="datetime-local" className="input-field" required />
+              <input name="time" type="datetime-local" className="input-field" required />
             </div>
-            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '12px' }}>Deploy Flight to EKS Cluster</button>
+            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '12px' }}>Deploy Flight to Cloud</button>
           </form>
         </div>
 
@@ -101,18 +146,83 @@ export default function AdminDashboard() {
         <div className="glass-panel" style={{ padding: '30px' }}>
           <h3 style={{ color: 'var(--accent)', marginBottom: '20px' }}>🧳 Real-Time Baggage Control</h3>
           <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
-            Update baggage statuses here. Our WebSocket server will instantly push this update to the user's tracking timeline without refreshing.
+            Update baggage statuses here. Our WebSocket server will instantly push this update to the user's tracking timeline.
           </p>
           <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-            <input type="text" className="input-field" placeholder="Baggage ID (e.g. BAG-123)" style={{ flex: 1 }} />
+            <input id="adminBagId" type="text" className="input-field" placeholder="Baggage ID (e.g. BAG-123)" style={{ flex: 1 }} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <button className="btn-primary" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', padding: '10px' }}>Status: Checked In</button>
-            <button className="btn-primary" style={{ background: 'rgba(0, 240, 255, 0.2)', border: '1px solid var(--accent)', padding: '10px' }}>Status: Loaded 🛫</button>
-            <button className="btn-primary" style={{ background: 'rgba(255, 215, 0, 0.2)', border: '1px solid rgba(255, 215, 0, 0.5)', padding: '10px' }}>Status: In Transit</button>
-            <button className="btn-primary" style={{ background: 'rgba(0, 255, 157, 0.2)', border: '1px solid var(--success)', padding: '10px' }}>Status: Arrived 🛬</button>
+            {['CHECKED_IN', 'LOADED', 'IN_TRANSIT', 'ARRIVED'].map(status => (
+              <button 
+                key={status}
+                onClick={async () => {
+                  const id = (document.getElementById('adminBagId') as HTMLInputElement).value;
+                  if (!id) return alert('Enter Baggage ID');
+                  try {
+                    await axios.patch(`${API_URL}/baggage/${id}/status`, { status });
+                    alert(`Status updated to ${status}`);
+                  } catch (err: any) {
+                    console.error(err);
+                    alert(err.response?.data?.error || 'Failed to update status.');
+                  }
+                }}
+                className="btn-primary" 
+                style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', padding: '10px', fontSize: '0.85rem' }}>
+                Set: {status}
+              </button>
+            ))}
           </div>
         </div>
+      </div>
+
+      <h3 style={{ marginBottom: '20px', marginTop: '40px' }}>User Directory</h3>
+      <div className="glass-panel" style={{ padding: '20px', overflowX: 'auto', marginBottom: '40px' }}>
+        <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <th style={{ padding: '15px' }}>Email / User ID</th>
+              <th style={{ padding: '15px' }}>Name</th>
+              <th style={{ padding: '15px' }}>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u: any) => (
+              <tr key={u.userId} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <td style={{ padding: '15px', color: 'var(--accent)' }}>{u.userId}</td>
+                <td style={{ padding: '15px' }}>{u.name || 'N/A'}</td>
+                <td style={{ padding: '15px' }}>
+                  <span style={{ padding: '5px 10px', background: u.role === 'admin' ? 'rgba(255, 51, 102, 0.2)' : 'rgba(255,255,255,0.1)', color: u.role === 'admin' ? 'var(--danger)' : '#fff', borderRadius: '10px', fontSize: '0.8rem' }}>
+                    {u.role.toUpperCase()}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style={{ marginBottom: '20px', marginTop: '40px' }}>Active Baggage Directory</h3>
+      <div className="glass-panel" style={{ padding: '20px', overflowX: 'auto', marginBottom: '40px' }}>
+        <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <th style={{ padding: '15px' }}>Baggage ID</th>
+              <th style={{ padding: '15px' }}>Booking PNR</th>
+              <th style={{ padding: '15px' }}>Passenger</th>
+              <th style={{ padding: '15px' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allBaggage.map((b: any) => (
+              <tr key={b.baggageId} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--accent)', fontWeight: 'bold' }}>{b.baggageId}</td>
+                <td style={{ padding: '15px' }}>{b.bookingId || <span style={{color:'red'}}>Ghost Bag</span>}</td>
+                <td style={{ padding: '15px' }}>{b.passengerId}</td>
+                <td style={{ padding: '15px' }}>{b.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

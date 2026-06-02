@@ -16,7 +16,7 @@ const TABLE_NAME = 'aerolink-baggage';
 router.post('/checkin', async (req, res) => {
   try {
     const { bookingId, flightId, passengerId, weight } = req.body;
-    const baggageId = uuidv4();
+    const baggageId = uuidv4().substring(0,8).toUpperCase();
     
     const baggageData = {
       baggageId, bookingId, flightId, passengerId, weight,
@@ -37,6 +37,12 @@ router.patch('/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
     const baggageId = req.params.id;
+
+    // Verify baggage exists first to prevent creating ghost items
+    const getRes = await docClient.send(new GetCommand({ TableName: TABLE_NAME, Key: { baggageId } }));
+    if (!getRes.Item) {
+      return res.status(404).json({ error: 'Baggage not found! Are you sure you did not accidentally paste your PNR instead of your Baggage ID?' });
+    }
 
     const response = await docClient.send(new UpdateCommand({
       TableName: TABLE_NAME,
@@ -65,6 +71,39 @@ router.get('/:id', async (req, res) => {
     res.status(200).json(response.Item);
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve baggage' });
+  }
+});
+
+// Get baggage by Booking ID
+router.get('/booking/:bookingId', async (req, res) => {
+  try {
+    const { QueryCommand } = require('@aws-sdk/lib-dynamodb');
+    const response = await docClient.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'BookingBaggageIndex',
+      KeyConditionExpression: 'bookingId = :b',
+      ExpressionAttributeValues: { ':b': req.params.bookingId }
+    }));
+    if (!response.Items || response.Items.length === 0) {
+      return res.status(404).json({ error: 'No baggage found for this booking' });
+    }
+    // Return the latest baggage record if multiple
+    res.status(200).json(response.Items[response.Items.length - 1]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve baggage by booking ID' });
+  }
+});
+
+// Get all baggage (Admin)
+router.get('/', async (req, res) => {
+  try {
+    const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
+    const response = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+    res.status(200).json(response.Items);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve all baggage' });
   }
 });
 

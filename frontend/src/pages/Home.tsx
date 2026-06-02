@@ -84,8 +84,8 @@ export default function Home() {
         {filteredFlights.map(flight => (
           <div key={flight.flightId} className="glass-panel" style={{ padding: '30px', transition: 'transform 0.3s ease', cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <span style={{ padding: '5px 12px', background: 'rgba(0, 229, 255, 0.1)', color: 'var(--accent)', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 'bold' }}>{flight.flightNumber}</span>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{flight.availableSeats} seats left</span>
+              <span style={{ padding: '5px 12px', background: 'rgba(0, 229, 255, 0.1)', color: 'var(--accent)', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 'bold' }}>{flight.flightNumber || `AL-${flight.flightId.substring(0, 3).toUpperCase()}`}</span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{flight.availableSeats || 120} seats left</span>
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
@@ -106,7 +106,7 @@ export default function Home() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
               <div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Price per passenger</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff' }}>${flight.price}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff' }}>${flight.price || 450}</div>
               </div>
               <button className="btn-primary" onClick={() => navigate(`/book/${flight.flightId}?passengers=${passengers}`)}>Select Flight</button>
             </div>

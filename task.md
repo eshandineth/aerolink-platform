@@ -47,3 +47,12 @@
 - `[x]` Premium UI: Baggage Tracking Timeline
 - `[x]` Premium UI: Real User/Admin Auth Flow
 - `[x]` Premium UI: Advanced Admin Dashboard
+
+## Phase 7: Functional Integration
+- `[x]` Backend: Add user bookings & cancel routes to Booking Service
+- `[x]` Backend: Add bookingId lookup to Baggage Service
+- `[x]` Backend: Implement seat locking & baggage sync in WebSocket Service
+- `[x]` Frontend: Wire Admin Dashboard (Add Flight, Update Baggage)
+- `[x]` Frontend: Wire User Profile (Fetch Bookings, Cancel, Add Baggage, Check-In)
+- `[x]` Frontend: Wire Baggage Tracking by Booking ID
+- `[x]` Frontend: Implement Real-Time Seat Locking in Booking Page

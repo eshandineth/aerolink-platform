@@ -41,6 +41,18 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} joined room flight_${flightId}`);
   });
 
+  // Client requests to join a specific baggage tracking room
+  socket.on('join_baggage', (bookingId) => {
+    socket.join(`baggage_${bookingId}`);
+    console.log(`Socket ${socket.id} joined room baggage_${bookingId}`);
+  });
+
+  // Seat Locking: Broadcast to others that a seat is currently being booked
+  socket.on('lock_seat', ({ flightId, seatId }) => {
+    socket.to(`flight_${flightId}`).emit('seat_locked', { seatId });
+    console.log(`Seat ${seatId} locked on flight ${flightId} by socket ${socket.id}`);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });

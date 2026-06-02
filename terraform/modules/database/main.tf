@@ -46,6 +46,17 @@ resource "aws_dynamodb_table" "bookings_table" {
     type = "S"
   }
 
+  attribute {
+    name = "userId"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "UserBookingsIndex"
+    hash_key        = "userId"
+    projection_type = "ALL"
+  }
+
   stream_enabled   = true
   stream_view_type = "NEW_AND_OLD_IMAGES"
 
@@ -62,6 +73,17 @@ resource "aws_dynamodb_table" "baggage_table" {
   attribute {
     name = "baggageId"
     type = "S"
+  }
+
+  attribute {
+    name = "bookingId"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "BookingBaggageIndex"
+    hash_key        = "bookingId"
+    projection_type = "ALL"
   }
 
   stream_enabled   = true

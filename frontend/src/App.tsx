@@ -9,7 +9,7 @@ import Profile from './pages/Profile';
 import Baggage from './pages/Baggage';
 
 // Protected Route Wrapper
-const ProtectedRoute = ({ children, requiredRole }: { children: JSX.Element, requiredRole?: string }) => {
+const ProtectedRoute = ({ children, requiredRole }: { children: any, requiredRole?: string }) => {
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
 

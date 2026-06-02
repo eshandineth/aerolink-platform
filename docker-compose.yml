@@ -20,18 +20,11 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
       - AWS_XRAY_CONTEXT_MISSING=IGNORE_ERROR
       - JWT_SECRET=local_development_secret
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
-      - AWS_XRAY_CONTEXT_MISSING=IGNORE_ERROR
-    depends_on:
-      - dynamodb-local
+    volumes:
+      - ~/.aws:/root/.aws:ro
 
   flight-service:
     build:
@@ -41,13 +34,10 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
       - AWS_XRAY_CONTEXT_MISSING=IGNORE_ERROR
-    depends_on:
-      - dynamodb-local
+    volumes:
+      - ~/.aws:/root/.aws:ro
 
   booking-service:
     build:
@@ -57,13 +47,10 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
       - AWS_XRAY_CONTEXT_MISSING=IGNORE_ERROR
-    depends_on:
-      - dynamodb-local
+    volumes:
+      - ~/.aws:/root/.aws:ro
 
   baggage-service:
     build:
@@ -73,13 +60,10 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
       - AWS_XRAY_CONTEXT_MISSING=IGNORE_ERROR
-    depends_on:
-      - dynamodb-local
+    volumes:
+      - ~/.aws:/root/.aws:ro
 
   websocket-service:
     build:
@@ -89,9 +73,3 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    ports:
-      - "8000:8000"
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"

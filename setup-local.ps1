@@ -1,0 +1,7 @@
+sleep 10
+aws dynamodb create-table --endpoint-url http://localhost:8000 --table-name aerolink-users --attribute-definitions AttributeName=userId,AttributeType=S --key-schema AttributeName=userId,KeyType=HASH --billing-mode PAY_PER_REQUEST --region us-east-1
+aws dynamodb create-table --endpoint-url http://localhost:8000 --table-name aerolink-flights --attribute-definitions AttributeName=flightId,AttributeType=S --key-schema AttributeName=flightId,KeyType=HASH --billing-mode PAY_PER_REQUEST --region us-east-1
+aws dynamodb create-table --endpoint-url http://localhost:8000 --table-name aerolink-bookings --attribute-definitions AttributeName=bookingId,AttributeType=S AttributeName=userId,AttributeType=S --key-schema AttributeName=bookingId,KeyType=HASH --global-secondary-indexes "IndexName=UserBookingsIndex,KeySchema=[{AttributeName=userId,KeyType=HASH}],Projection={ProjectionType=ALL}" --billing-mode PAY_PER_REQUEST --region us-east-1
+aws dynamodb create-table --endpoint-url http://localhost:8000 --table-name aerolink-baggage --attribute-definitions AttributeName=baggageId,AttributeType=S AttributeName=bookingId,AttributeType=S --key-schema AttributeName=baggageId,KeyType=HASH --global-secondary-indexes "IndexName=BookingBaggageIndex,KeySchema=[{AttributeName=bookingId,KeyType=HASH}],Projection={ProjectionType=ALL}" --billing-mode PAY_PER_REQUEST --region us-east-1
+cd services/auth-service
+node seed.js

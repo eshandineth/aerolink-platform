@@ -1,0 +1,16 @@
+[
+    {
+        "Create": {
+            "IndexName": "BookingBaggageIndex",
+            "KeySchema": [
+                {
+                    "AttributeName": "bookingId",
+                    "KeyType": "HASH"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            }
+        }
+    }
+]

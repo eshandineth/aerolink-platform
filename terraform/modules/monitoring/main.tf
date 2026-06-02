@@ -39,3 +39,19 @@ resource "aws_cloudwatch_dashboard" "main" {
     ]
   })
 }
+
+resource "aws_cloudwatch_metric_alarm" "dynamodb_read_capacity" {
+  alarm_name          = "${var.project_name}-high-dynamodb-read-capacity"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "ConsumedReadCapacityUnits"
+  namespace           = "AWS/DynamoDB"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 80
+  alarm_description   = "This metric monitors high DynamoDB read capacity on the flights table"
+  
+  dimensions = {
+    TableName = "${var.project_name}-flights"
+  }
+}

@@ -17,8 +17,13 @@ body {
   padding: 0;
   background-color: var(--bg-primary);
   background-image: 
-    radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(255, 51, 102, 0.05), transparent 25%);
+    radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.15), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(255, 51, 102, 0.15), transparent 30%),
+    linear-gradient(to bottom, rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.95)),
+    url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
 }

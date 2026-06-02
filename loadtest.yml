@@ -1,0 +1,19 @@
+config:
+  target: "http://localhost:3000/api/v1"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 60
+      arrivalRate: 20
+      name: "Sustained load"
+scenarios:
+  - name: "Browse flights and check baggage"
+    flow:
+      - get:
+          url: "/flights"
+      - think: 2
+      - get:
+          url: "/baggage/booking/8xy92z"
+          expect:
+            - statusCode: 404 # or 200 depending on DB state
